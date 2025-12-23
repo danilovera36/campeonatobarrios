@@ -243,7 +243,16 @@ export function MatchesList() {
               </div>
               <div className="space-y-2">
                 <Label>Ronda / Jornada</Label>
-                <Input placeholder="Ej: Fecha 1, Semifinal" value={newMatch.round} onChange={e => setNewMatch({ ...newMatch, round: e.target.value })} />
+                <Select value={newMatch.round} onValueChange={(v) => setNewMatch({ ...newMatch, round: v })}>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar fecha" /></SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 7 }, (_, i) => `Fecha ${i + 1}`).map(r => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                    <SelectItem value="Semifinal">Semifinal</SelectItem>
+                    <SelectItem value="Final">Final</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Lugar (Cancha)</Label>

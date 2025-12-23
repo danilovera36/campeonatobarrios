@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Trophy, Shield, Trash2, Plus, ChevronLeft, Save, AlertCircle } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 
 interface Player {
@@ -50,7 +51,8 @@ export function MatchEditor({ matchId, onBack }: { matchId: string, onBack: () =
         awayScore: 0,
         venue: '',
         round: '',
-        notes: ''
+        notes: '',
+        date: ''
     })
 
     const [newGoal, setNewGoal] = useState({ playerId: '', teamId: '', minute: '', type: 'NORMAL' })
@@ -73,7 +75,8 @@ export function MatchEditor({ matchId, onBack }: { matchId: string, onBack: () =
                     awayScore: found.awayScore || 0,
                     venue: found.venue || '',
                     round: found.round || '',
-                    notes: found.notes || ''
+                    notes: found.notes || '',
+                    date: found.date ? new Date(found.date).toLocaleString('sv').replace(' ', 'T').slice(0, 16) : ''
                 })
             }
         } catch (e) {
@@ -87,10 +90,15 @@ export function MatchEditor({ matchId, onBack }: { matchId: string, onBack: () =
         e.preventDefault()
         setIsSaving(true)
         try {
+            const payload = { ...basicInfo }
+            if (basicInfo.date) {
+                payload.date = new Date(basicInfo.date).toISOString()
+            }
+
             const resp = await fetch(`/api/matches/${matchId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(basicInfo)
+                body: JSON.stringify(payload)
             })
             if (resp.ok) {
                 toast.success('Partido actualizado')
@@ -206,9 +214,34 @@ export function MatchEditor({ matchId, onBack }: { matchId: string, onBack: () =
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Ronda / Fecha</Label>
+                                    <Label>Ronda / Fecha</Label>
+                                    <Select value={basicInfo.round} onValueChange={(v) => setBasicInfo({ ...basicInfo, round: v })}>
+                                        <SelectTrigger className="bg-white"><SelectValue placeholder="Seleccionar fecha" /></SelectTrigger>
+                                        <SelectContent>
+                                            {Array.from({ length: 7 }, (_, i) => `Fecha ${i + 1}`).map(r => (
+                                                <SelectItem key={r} value={r}>{r}</SelectItem>
+                                            ))}
+                                            <SelectItem value="Semifinal">Semifinal</SelectItem>
+                                            <SelectItem value="Final">Final</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Fecha y Hora</Label>
                                     <Input
-                                        value={basicInfo.round}
-                                        onChange={e => setBasicInfo({ ...basicInfo, round: e.target.value })}
+                                        type="datetime-local"
+                                        value={basicInfo.date}
+                                        onChange={e => setBasicInfo({ ...basicInfo, date: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Lugar</Label>
+                                    <Input
+                                        value={basicInfo.venue}
+                                        onChange={e => setBasicInfo({ ...basicInfo, venue: e.target.value })}
                                     />
                                 </div>
                             </div>

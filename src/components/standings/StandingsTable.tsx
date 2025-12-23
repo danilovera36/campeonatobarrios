@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Trophy, TrendingUp, TrendingDown, Minus, Shield } from 'lucide-react'
 
 interface StandingTeam {
   position: number
@@ -12,6 +12,7 @@ interface StandingTeam {
     name: string
     neighborhood: string
     color?: string
+    logo?: string
   }
   matchesPlayed: number
   wins: number
@@ -62,7 +63,7 @@ export function StandingsTable() {
     // Simulación de forma - podrías calcularla basándote en resultados recientes
     const forms = ['up', 'down', 'same', 'up', 'up', 'down', 'same', 'up']
     const form = forms[position - 1] || 'same'
-    
+
     switch (form) {
       case 'up':
         return <TrendingUp className="w-3 h-3 text-green-500" />
@@ -115,11 +116,10 @@ export function StandingsTable() {
             </thead>
             <tbody>
               {standings.map((team) => (
-                <tr 
-                  key={team.team.id} 
-                  className={`border-b hover:bg-gray-50 transition-colors ${
-                    team.position <= 4 ? 'bg-green-50' : ''
-                  }`}
+                <tr
+                  key={team.team.id}
+                  className={`border-b hover:bg-gray-50 transition-colors ${team.position <= 4 ? 'bg-green-50' : ''
+                    }`}
                 >
                   <td className="p-3">
                     <div className="flex items-center gap-2">
@@ -128,10 +128,27 @@ export function StandingsTable() {
                   </td>
                   <td className="p-3">
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: team.team.color || '#10b981' }}
-                      />
+                      <div className="w-8 h-8 rounded-full border bg-white flex items-center justify-center shadow-sm overflow-hidden"
+                        style={{ borderColor: team.team.color || '#e5e7eb' }}>
+                        {team.team.logo ? (
+                          <img
+                            src={team.team.logo}
+                            alt={team.team.name}
+                            className="w-full h-full object-contain p-1"
+                            onError={(e: any) => {
+                              e.target.style.display = 'none';
+                              if (e.target.nextSibling) e.target.nextSibling.style.display = 'block';
+                            }}
+                          />
+                        ) : null}
+                        <Shield
+                          className="w-4 h-4"
+                          style={{
+                            color: team.team.color || '#10b981',
+                            display: team.team.logo ? 'none' : 'block'
+                          }}
+                        />
+                      </div>
                       <div>
                         <div className="font-medium text-gray-900">{team.team.name}</div>
                         <div className="text-xs text-gray-500">{team.team.neighborhood}</div>
@@ -157,10 +174,9 @@ export function StandingsTable() {
                   <td className="text-center p-3 font-medium">{team.goalsFor}</td>
                   <td className="text-center p-3 font-medium">{team.goalsAgainst}</td>
                   <td className="text-center p-3">
-                    <span className={`font-medium ${
-                      team.goalDifference > 0 ? 'text-green-600' : 
+                    <span className={`font-medium ${team.goalDifference > 0 ? 'text-green-600' :
                       team.goalDifference < 0 ? 'text-red-600' : 'text-gray-600'
-                    }`}>
+                      }`}>
                       {team.goalDifference > 0 ? '+' : ''}{team.goalDifference}
                     </span>
                   </td>
@@ -203,6 +219,6 @@ export function StandingsTable() {
           </div>
         </div>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
