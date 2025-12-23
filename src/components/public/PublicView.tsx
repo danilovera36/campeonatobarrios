@@ -296,6 +296,8 @@ export function PublicView() {
             </Card>
           </TabsContent>
 
+          {/* Hidden Login Form - only visible when clicking "Acceso Admin" */}
+          <LoginForm />
         </Tabs>
       </div>
 
