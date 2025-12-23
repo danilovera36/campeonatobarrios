@@ -24,7 +24,10 @@ export function LoginForm() {
 
     try {
       const success = await login(username, password)
-      if (!success) {
+      if (success) {
+        // Redirigir al panel de administración (que está en la home con acceso admin)
+        window.location.href = '/' // Usamos window.location para forzar recarga y que se actualice el estado
+      } else {
         setError('Usuario o contraseña incorrectos')
       }
     } catch (error) {
