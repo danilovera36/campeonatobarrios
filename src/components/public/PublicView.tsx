@@ -98,10 +98,6 @@ export function PublicView() {
               <Shield className="w-4 h-4 mr-1" />
               Galería
             </TabsTrigger>
-            <TabsTrigger value="sponsors" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
-              <Trophy className="w-4 h-4 mr-1" />
-              Apoyan
-            </TabsTrigger>
           </TabsList>
 
           {/* Inicio Tab */}
@@ -181,6 +177,49 @@ export function PublicView() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Sponsors Section */}
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl text-green-800 flex items-center gap-2">
+                  <Trophy className="w-5 h-5" />
+                  Empresas que Apoyan el Campeonato
+                </CardTitle>
+                <CardDescription>
+                  Agradecemos a las empresas y comercios locales que hacen posible este torneo
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {/* DV Logo - First Sponsor */}
+                  <div className="aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center p-4 bg-white hover:shadow-lg transition-all">
+                    <img
+                      src="/dv.png"
+                      alt="DV"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+
+                  {/* Placeholder sponsors */}
+                  {[2, 3, 4, 5, 6, 7, 8].map((i) => (
+                    <div
+                      key={i}
+                      className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center p-4 hover:border-green-500 hover:bg-green-50 transition-all group"
+                    >
+                      <div className="text-center">
+                        <Trophy className="w-12 h-12 text-gray-300 group-hover:text-green-500 mx-auto mb-2 transition-colors" />
+                        <p className="text-xs text-gray-400 group-hover:text-green-600 font-medium">Patrocinador {i}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <p className="text-center text-green-800 font-medium text-sm">
+                    ¿Tu empresa quiere apoyar el campeonato? Contacta con los organizadores
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Noticias Tab - Public View */}
@@ -257,56 +296,6 @@ export function PublicView() {
             </Card>
           </TabsContent>
 
-          {/* Sponsors Tab */}
-          <TabsContent value="sponsors" className="space-y-6 mt-6">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl text-green-800 flex items-center gap-2">
-                  <Trophy className="w-6 h-6" />
-                  Empresas que Apoyan el Campeonato
-                </CardTitle>
-                <CardDescription>
-                  Agradecemos a las empresas y comercios locales que hacen posible este torneo
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {/* DV Logo - First Sponsor */}
-                  <div className="aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center p-4 bg-white hover:shadow-lg transition-all">
-                    <img
-                      src="/dv.png"
-                      alt="DV"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-
-                  {/* Placeholder sponsors - replace with actual logos */}
-                  {[2, 3, 4, 5, 6, 7, 8].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center p-4 hover:border-green-500 hover:bg-green-50 transition-all group"
-                    >
-                      <div className="text-center">
-                        <Trophy className="w-12 h-12 text-gray-300 group-hover:text-green-500 mx-auto mb-2 transition-colors" />
-                        <p className="text-xs text-gray-400 group-hover:text-green-600 font-medium">Patrocinador {i}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-8 p-6 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-center text-green-800 font-medium">
-                    ¿Tu empresa quiere apoyar el campeonato?
-                  </p>
-                  <p className="text-center text-green-600 text-sm mt-2">
-                    Contacta con los organizadores para más información
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Hidden Admin Access - accessible via /login route */}
-          <LoginForm />
         </Tabs>
       </div>
 
