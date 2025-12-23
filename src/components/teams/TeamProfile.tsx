@@ -162,6 +162,27 @@ export function TeamProfile({ team }: { team: Team }) {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {/* Sponsors Section */}
+                        <Card className="shadow-2xl border-0 overflow-hidden group">
+                            <div className="h-2 w-full" style={{ backgroundColor: teamColor }}></div>
+                            <CardHeader className="bg-white pb-2 pt-6">
+                                <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900 group-hover:translate-x-1 transition-transform">
+                                    <Trophy className="w-6 h-6" style={{ color: teamColor }} />
+                                    Empresas que nos Apoyan
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="bg-white">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                                        <div key={i} className="aspect-video bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-4 hover:border-gray-300 transition-colors group/sponsor">
+                                            <Trophy className="w-8 h-8 text-gray-300 mb-2 group-hover/sponsor:text-gray-400 transition-colors" />
+                                            <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">Espacio Disponible</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     {/* Right Column - Stats Card */}

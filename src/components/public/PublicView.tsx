@@ -191,28 +191,15 @@ export function PublicView() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                   {/* DV Logo - First Sponsor */}
-                  <div className="aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center p-4 bg-white hover:shadow-lg transition-all">
+                  <div className="aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center p-2 bg-white hover:shadow-lg transition-all">
                     <img
                       src="/dv.png"
                       alt="DV"
                       className="w-full h-full object-contain"
                     />
                   </div>
-
-                  {/* Placeholder sponsors */}
-                  {[2, 3, 4, 5, 6, 7, 8].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center p-4 hover:border-green-500 hover:bg-green-50 transition-all group"
-                    >
-                      <div className="text-center">
-                        <Trophy className="w-12 h-12 text-gray-300 group-hover:text-green-500 mx-auto mb-2 transition-colors" />
-                        <p className="text-xs text-gray-400 group-hover:text-green-600 font-medium">Patrocinador {i}</p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
                 <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
                   <p className="text-center text-green-800 font-medium text-sm">
