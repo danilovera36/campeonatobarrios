@@ -97,10 +97,13 @@ export function MatchesList() {
   const handleAddMatch = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      const dateObj = new Date(newMatch.date)
+      const payload = { ...newMatch, date: dateObj.toISOString() }
+
       const response = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMatch)
+        body: JSON.stringify(payload)
       })
       if (response.ok) {
         setIsAdding(false)
