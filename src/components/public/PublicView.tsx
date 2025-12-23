@@ -13,7 +13,7 @@ import { StatisticsDashboard } from '@/components/statistics/StatisticsDashboard
 import { TeamsManager } from '@/components/teams/TeamsManager'
 import { MatchesList } from '@/components/matches/MatchesList'
 import { NewsSection } from '@/components/news/NewsSection'
-import { LoginForm } from '@/components/auth/LoginForm'
+import Link from 'next/link'
 
 export function PublicView() {
   const [activeTab, setActiveTab] = useState('inicio')
@@ -54,14 +54,15 @@ export function PublicView() {
                 <Trophy className="w-4 h-4 mr-1" />
                 Temporada 2026
               </Badge>
-              <Button
-                variant="outline"
-                className="bg-green-50 border-green-200 text-green-800 hover:bg-green-100"
-                onClick={() => setActiveTab('admin')}
-              >
-                <Lock className="w-4 h-4 mr-2" />
-                Acceso Admin
-              </Button>
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  className="bg-green-50 border-green-200 text-green-800 hover:bg-green-100"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Acceso Admin
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -296,8 +297,7 @@ export function PublicView() {
             </Card>
           </TabsContent>
 
-          {/* Hidden Login Form - only visible when clicking "Acceso Admin" */}
-          <LoginForm />
+
         </Tabs>
       </div>
 
