@@ -1,0 +1,245 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Equipos que participan en el campeonato
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  neighborhood String
+  description String?
+  logo        String?
+  color       String?  // Color principal del equipo
+  foundedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+  players     Player[]
+  statistics  TeamStatistic[]
+
+  @@map("teams")
+}
+
+// Jugadores de los equipos
+model Player {
+  id        String   @id @default(cuid())
+  name      String
+  number    Int
+  position  String   // Ej: "Delantero", "Mediocampista", "Defensa", "Portero"
+  teamId    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  team       Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  goals      Goal[]
+  assists    Assist[]
+  cards      Card[]
+  statistics PlayerStatistic[]
+
+  @@unique([teamId, number])
+  @@map("players")
+}
+
+// Partidos del campeonato
+model Match {
+  id          String    @id @default(cuid())
+  homeTeamId  String
+  awayTeamId  String
+  date        DateTime
+  venue       String?   // Lugar del partido
+  status      MatchStatus @default(SCHEDULED)
+  homeScore   Int?      // Goles equipo local
+  awayScore   Int?      // Goles equipo visitante
+  round       String?   // Ej: "Fecha 1", "Semifinal", etc.
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relaciones
+  homeTeam  Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam  Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  goals     Goal[]
+  cards     Card[]
+  assists   Assist[]
+  events    MatchEvent[]
+
+  @@map("matches")
+}
+
+// Estados posibles de un partido
+enum MatchStatus {
+  SCHEDULED   // Programado
+  IN_PROGRESS // En curso
+  COMPLETED   // Finalizado
+  CANCELLED   // Cancelado
+  POSTPONED   // Pospuesto
+}
+
+// Goles marcados en los partidos
+model Goal {
+  id        String   @id @default(cuid())
+  matchId   String
+  playerId  String
+  minute    Int      // Minuto del gol
+  isOwnGoal Boolean  @default(false)
+  isPenalty Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("goals")
+}
+
+// Asistencias en los partidos
+model Assist {
+  id        String   @id @default(cuid())
+  matchId   String
+  playerId  String
+  minute    Int      // Minuto de la asistencia
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("assists")
+}
+
+// Tarjetas (amarillas/rojas) en los partidos
+model Card {
+  id       String   @id @default(cuid())
+  matchId  String
+  playerId String
+  type     CardType
+  minute   Int      // Minuto de la tarjeta
+  reason   String?  // Motivo de la tarjeta
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("cards")
+}
+
+// Tipos de tarjetas
+enum CardType {
+  YELLOW
+  RED
+}
+
+// Eventos del partido (cambios, lesiones, etc.)
+model MatchEvent {
+  id        String     @id @default(cuid())
+  matchId   String
+  type      EventType
+  minute    Int
+  description String?
+  createdAt DateTime   @default(now())
+
+  // Relaciones
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@map("match_events")
+}
+
+// Tipos de eventos del partido
+enum EventType {
+  SUBSTITUTION
+  INJURY
+  VAR_REVIEW
+  HALFTIME
+  FULLTIME
+}
+
+// Estadísticas generales de equipos
+model TeamStatistic {
+  id          String   @id @default(cuid())
+  teamId      String
+  season      String   // Ej: "2026"
+  matchesPlayed Int    @default(0)
+  wins        Int      @default(0)
+  draws       Int      @default(0)
+  losses      Int      @default(0)
+  goalsFor    Int      @default(0)
+  goalsAgainst Int     @default(0)
+  points      Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, season])
+  @@map("team_statistics")
+}
+
+// Estadísticas individuales de jugadores
+model PlayerStatistic {
+  id          String   @id @default(cuid())
+  playerId    String
+  season      String   // Ej: "2026"
+  matchesPlayed Int    @default(0)
+  goals       Int      @default(0)
+  assists     Int      @default(0)
+  yellowCards Int      @default(0)
+  redCards    Int      @default(0)
+  minutesPlayed Int    @default(0)
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, season])
+  @@map("player_statistics")
+}
+
+// Noticias del campeonato
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  summary     String?
+  imageUrl    String?
+  author      String?
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("news")
+}
+
+// Configuración del campeonato
+model Championship {
+  id          String   @id @default(cuid())
+  name        String   @default("Campeonato de los Barrios")
+  subtitle    String   @default("Alfredo 'Tente' Zulueta")
+  season      String   @default("2026")
+  isActive    Boolean  @default(true)
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("championships")
+}
