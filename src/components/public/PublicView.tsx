@@ -191,7 +191,7 @@ export function PublicView() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                   {/* DV Logo - First Sponsor */}
                   <div className="aspect-square border-2 border-gray-200 rounded-lg flex items-center justify-center p-2 bg-white hover:shadow-lg transition-all">
                     <img
