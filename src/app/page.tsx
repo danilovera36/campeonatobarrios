@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Trophy, Calendar, Users, Target, TrendingUp, Shield, Newspaper } from 'lucide-react'
+import { Trophy, Calendar, Users, Target, TrendingUp, Shield, Newspaper, Menu } from 'lucide-react'
 
 // Import components
 import { TeamsManager } from '@/components/teams/TeamsManager'
@@ -18,6 +18,12 @@ import { LoginForm } from '@/components/auth/LoginForm'
 import { AdminButton } from '@/components/auth/AdminButton'
 import { PublicView } from '@/components/public/PublicView'
 import { useAuth } from '@/contexts/AuthContext'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function Home() {
   const { isAuthenticated, isAdmin, loading } = useAuth()
@@ -63,34 +69,78 @@ export default function Home() {
       </header>
       <div className="container mx-auto px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-white shadow-md">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 bg-white shadow-md h-auto p-1">
             <TabsTrigger value="inicio" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
               Inicio
             </TabsTrigger>
+
+            <TabsTrigger value="posiciones" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+              <Target className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Tabla</span>
+              <span className="sm:hidden">Tabla</span>
+            </TabsTrigger>
+
             <TabsTrigger value="equipos" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <Users className="w-4 h-4 mr-1" />
               Equipos
             </TabsTrigger>
-            <TabsTrigger value="partidos" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+
+            {/* Desktop only tabs */}
+            <TabsTrigger value="partidos" className="hidden lg:inline-flex data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <Calendar className="w-4 h-4 mr-1" />
               Partidos
             </TabsTrigger>
-            <TabsTrigger value="posiciones" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
-              <Target className="w-4 h-4 mr-1" />
-              Tabla
-            </TabsTrigger>
-            <TabsTrigger value="estadisticas" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+
+            <TabsTrigger value="estadisticas" className="hidden lg:inline-flex data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <TrendingUp className="w-4 h-4 mr-1" />
               Estadísticas
             </TabsTrigger>
-            <TabsTrigger value="noticias" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+
+            <TabsTrigger value="noticias" className="hidden lg:inline-flex data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <Newspaper className="w-4 h-4 mr-1" />
               Noticias
             </TabsTrigger>
-            <TabsTrigger value="galeria" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+
+            <TabsTrigger value="galeria" className="hidden lg:inline-flex data-[state=active]:bg-green-600 data-[state=active]:text-white">
               <Shield className="w-4 h-4 mr-1" />
               Galería
             </TabsTrigger>
+
+            {/* Mobile Menu Dropdown */}
+            <div className="lg:hidden w-full h-full">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={`w-full h-full rounded-sm data-[state=open]:bg-gray-100 ${['partidos', 'estadisticas', 'noticias', 'galeria'].includes(activeTab)
+                      ? "bg-green-600 text-white hover:bg-green-700 hover:text-white"
+                      : "hover:bg-gray-100"
+                      }`}
+                  >
+                    <Menu className="w-4 h-4 mr-1" />
+                    Más
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setActiveTab('partidos')}>
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Partidos
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveTab('estadisticas')}>
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Estadísticas
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveTab('noticias')}>
+                    <Newspaper className="w-4 h-4 mr-2" />
+                    Noticias
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveTab('galeria')}>
+                    <Shield className="w-4 h-4 mr-2" />
+                    Galería
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </TabsList>
 
           {/* Inicio Tab */}
