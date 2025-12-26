@@ -38,7 +38,13 @@ export async function POST(request: NextRequest) {
         description,
         logo,
         color,
-        foundedAt: foundedAt ? new Date(foundedAt) : null
+        foundedAt: foundedAt ? new Date(foundedAt) : null,
+        sponsor1: data.sponsor1,
+        sponsor2: data.sponsor2,
+        sponsor3: data.sponsor3,
+        sponsor4: data.sponsor4,
+        sponsor5: data.sponsor5,
+        sponsor6: data.sponsor6
       }
     })
 

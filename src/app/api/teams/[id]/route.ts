@@ -53,7 +53,13 @@ export async function PATCH(
                 neighborhood,
                 description,
                 logo,
-                color
+                color,
+                sponsor1: data.sponsor1,
+                sponsor2: data.sponsor2,
+                sponsor3: data.sponsor3,
+                sponsor4: data.sponsor4,
+                sponsor5: data.sponsor5,
+                sponsor6: data.sponsor6
             }
         })
 

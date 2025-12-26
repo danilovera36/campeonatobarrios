@@ -31,6 +31,13 @@ model Team {
   players     Player[]
   statistics  TeamStatistic[]
 
+  sponsor1    String?
+  sponsor2    String?
+  sponsor3    String?
+  sponsor4    String?
+  sponsor5    String?
+  sponsor6    String?
+
   @@map("teams")
 }
 

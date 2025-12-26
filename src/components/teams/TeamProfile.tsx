@@ -28,6 +28,12 @@ interface Team {
     description: string
     logo: string
     color: string
+    sponsor1?: string
+    sponsor2?: string
+    sponsor3?: string
+    sponsor4?: string
+    sponsor5?: string
+    sponsor6?: string
     players: Player[]
     statistics: TeamStatistic[]
 }
@@ -174,10 +180,16 @@ export function TeamProfile({ team }: { team: Team }) {
                             </CardHeader>
                             <CardContent className="bg-white">
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                                        <div key={i} className="aspect-video bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-2 md:p-4 hover:border-gray-300 transition-colors group/sponsor">
-                                            <Trophy className="w-6 h-6 md:w-8 md:h-8 text-gray-300 mb-2 group-hover/sponsor:text-gray-400 transition-colors" />
-                                            <span className="text-gray-400 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center">Espacio Disponible</span>
+                                    {[team.sponsor1, team.sponsor2, team.sponsor3, team.sponsor4, team.sponsor5, team.sponsor6].map((sponsor, i) => (
+                                        <div key={i} className="aspect-video bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-2 md:p-4 hover:border-gray-300 transition-colors group/sponsor overflow-hidden">
+                                            {sponsor ? (
+                                                <img src={sponsor} alt={`Sponsor ${i + 1}`} className="w-full h-full object-contain group-hover/sponsor:scale-105 transition-transform" />
+                                            ) : (
+                                                <>
+                                                    <Trophy className="w-6 h-6 md:w-8 md:h-8 text-gray-300 mb-2 group-hover/sponsor:text-gray-400 transition-colors" />
+                                                    <span className="text-gray-400 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center">Espacio Disponible</span>
+                                                </>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
