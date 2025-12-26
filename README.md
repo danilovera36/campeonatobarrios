@@ -153,3 +153,6 @@ Este proyecto es de código abierto para uso comunitario.
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas. Por favor, abre un issue primero para discutir los cambios que te gustaría hacer.
+
+
+
