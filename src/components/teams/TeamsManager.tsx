@@ -167,69 +167,83 @@ export function TeamsManager() {
     }
   }
 
-  const ImageInput = ({ label, value, field, isEditing }: { label: string, value: string, field: string, isEditing: boolean }) => (
-    <div className="space-y-2">
-      <label className="text-sm font-medium flex justify-between">
-        {label}
-        {value && <span className="text-[10px] text-green-600 font-bold uppercase">Cargado</span>}
-      </label>
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <input
-            className="w-full p-2 border rounded-md text-xs pr-8"
-            placeholder="URL o sube una imagen"
-            value={value || ''}
-            onChange={e => {
-              if (isEditing && editingTeam) {
-                setEditingTeam({ ...editingTeam, [field]: e.target.value })
-              } else {
-                setNewTeam({ ...newTeam, [field]: e.target.value })
-              }
-            }}
-          />
-          {value && (
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
-              onClick={() => {
+  const ImageInput = ({ label, value, field, isEditing }: { label: string, value: string, field: string, isEditing: boolean }) => {
+    const displayValue = value && !value.startsWith('http') && !value.startsWith('/') ? `/${value}` : value;
+
+    return (
+      <div className="space-y-2">
+        <label className="text-sm font-medium flex justify-between">
+          {label}
+          {value && <span className="text-[10px] text-green-600 font-bold uppercase">Cargado</span>}
+        </label>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input
+              className="w-full p-2 border rounded-md text-xs pr-8"
+              placeholder="Ej: /logotipo.png o sube una"
+              value={value || ''}
+              onChange={e => {
+                const val = e.target.value;
                 if (isEditing && editingTeam) {
-                  setEditingTeam({ ...editingTeam, [field]: '' })
+                  setEditingTeam({ ...editingTeam, [field]: val })
                 } else {
-                  setNewTeam({ ...newTeam, [field]: '' })
+                  setNewTeam({ ...newTeam, [field]: val })
                 }
               }}
+            />
+            {value && (
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
+                onClick={() => {
+                  if (isEditing && editingTeam) {
+                    setEditingTeam({ ...editingTeam, [field]: '' })
+                  } else {
+                    setNewTeam({ ...newTeam, [field]: '' })
+                  }
+                }}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+          <div className="relative">
+            <input
+              type="file"
+              id={`file-${field}-${isEditing}`}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, field, isEditing)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={uploading === field}
+              onClick={() => document.getElementById(`file-${field}-${isEditing}`)?.click()}
             >
-              <X className="w-3 h-3" />
-            </button>
-          )}
+              {uploading === field ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+            </Button>
+          </div>
         </div>
-        <div className="relative">
-          <input
-            type="file"
-            id={`file-${field}-${isEditing}`}
-            className="hidden"
-            accept="image/*"
-            onChange={(e) => handleFileUpload(e, field, isEditing)}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="h-9 w-9"
-            disabled={uploading === field}
-            onClick={() => document.getElementById(`file-${field}-${isEditing}`)?.click()}
-          >
-            {uploading === field ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-          </Button>
-        </div>
+        {value && (
+          <div className="h-12 w-24 border rounded overflow-hidden bg-gray-50 flex items-center justify-center">
+            <img
+              src={displayValue}
+              alt="Preview"
+              className="max-w-full max-h-full object-contain"
+              onError={(e: any) => {
+                // If it fails with the relative path, try without the leading slash if we added one
+                // or just show an error icon
+                e.target.style.opacity = '0.5';
+              }}
+            />
+          </div>
+        )}
       </div>
-      {value && (
-        <div className="h-12 w-24 border rounded overflow-hidden bg-gray-50 flex items-center justify-center">
-          <img src={value} alt="Preview" className="max-w-full max-h-full object-contain" />
-        </div>
-      )}
-    </div>
-  )
+    )
+  }
 
   if (loading) {
     return (
@@ -435,7 +449,7 @@ export function TeamsManager() {
                 >
                   {team.logo ? (
                     <img
-                      src={team.logo}
+                      src={team.logo.startsWith('http') || team.logo.startsWith('/') ? team.logo : `/${team.logo}`}
                       alt={team.name}
                       className="w-full h-full object-contain"
                       onError={(e: any) => {
