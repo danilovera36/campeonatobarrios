@@ -132,7 +132,7 @@ export function StandingsTable() {
                         style={{ borderColor: team.team.color || '#e5e7eb' }}>
                         {team.team.logo ? (
                           <img
-                            src={team.team.logo}
+                            src={team.team.logo.startsWith('http') || team.team.logo.startsWith('/') ? team.team.logo : `/${team.team.logo}`}
                             alt={team.team.name}
                             className="w-full h-full object-contain p-1"
                             onError={(e: any) => {

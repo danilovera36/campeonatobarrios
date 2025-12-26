@@ -296,7 +296,7 @@ export function MatchesList() {
                           <div className="w-16 h-16 rounded-full border bg-white flex items-center justify-center mb-2 shadow-sm overflow-hidden" style={{ borderColor: match.homeTeam.color }}>
                             {match.homeTeam.logo ? (
                               <img
-                                src={match.homeTeam.logo}
+                                src={match.homeTeam.logo.startsWith('http') || match.homeTeam.logo.startsWith('/') ? match.homeTeam.logo : `/${match.homeTeam.logo}`}
                                 alt={match.homeTeam.name}
                                 className="w-full h-full object-contain p-2"
                                 onError={(e: any) => {
@@ -334,7 +334,7 @@ export function MatchesList() {
                           <div className="w-16 h-16 rounded-full border bg-white flex items-center justify-center mb-2 shadow-sm overflow-hidden" style={{ borderColor: match.awayTeam.color }}>
                             {match.awayTeam.logo ? (
                               <img
-                                src={match.awayTeam.logo}
+                                src={match.awayTeam.logo.startsWith('http') || match.awayTeam.logo.startsWith('/') ? match.awayTeam.logo : `/${match.awayTeam.logo}`}
                                 alt={match.awayTeam.name}
                                 className="w-full h-full object-contain p-2"
                                 onError={(e: any) => {

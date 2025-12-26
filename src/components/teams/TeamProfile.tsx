@@ -72,7 +72,7 @@ export function TeamProfile({ team }: { team: Team }) {
                             <div className="absolute -inset-1 bg-white/20 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                             <div className="w-36 h-36 md:w-52 md:h-52 rounded-full bg-white p-3 shadow-2xl flex items-center justify-center overflow-hidden border-4 border-white/90 relative">
                                 {team.logo ? (
-                                    <img src={team.logo} alt={team.name} className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500" />
+                                    <img src={team.logo.startsWith('http') || team.logo.startsWith('/') ? team.logo : `/${team.logo}`} alt={team.name} className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                     <Shield className="w-24 h-24" style={{ color: teamColor }} />
                                 )}
@@ -180,18 +180,21 @@ export function TeamProfile({ team }: { team: Team }) {
                             </CardHeader>
                             <CardContent className="bg-white">
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {[team.sponsor1, team.sponsor2, team.sponsor3, team.sponsor4, team.sponsor5, team.sponsor6].map((sponsor, i) => (
-                                        <div key={i} className="aspect-video bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-2 md:p-4 hover:border-gray-300 transition-colors group/sponsor overflow-hidden">
-                                            {sponsor ? (
-                                                <img src={sponsor} alt={`Sponsor ${i + 1}`} className="w-full h-full object-contain group-hover/sponsor:scale-105 transition-transform" />
-                                            ) : (
-                                                <>
-                                                    <Trophy className="w-6 h-6 md:w-8 md:h-8 text-gray-300 mb-2 group-hover/sponsor:text-gray-400 transition-colors" />
-                                                    <span className="text-gray-400 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center">Espacio Disponible</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    ))}
+                                    {[team.sponsor1, team.sponsor2, team.sponsor3, team.sponsor4, team.sponsor5, team.sponsor6].map((sponsor, i) => {
+                                        const imageUrl = sponsor ? (sponsor.startsWith('http') || sponsor.startsWith('/') ? sponsor : `/${sponsor}`) : null;
+                                        return (
+                                            <div key={i} className="aspect-video bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-2 md:p-4 hover:border-gray-300 transition-colors group/sponsor overflow-hidden">
+                                                {imageUrl ? (
+                                                    <img src={imageUrl} alt={`Sponsor ${i + 1}`} className="w-full h-full object-contain group-hover/sponsor:scale-105 transition-transform" />
+                                                ) : (
+                                                    <>
+                                                        <Trophy className="w-6 h-6 md:w-8 md:h-8 text-gray-300 mb-2 group-hover/sponsor:text-gray-400 transition-colors" />
+                                                        <span className="text-gray-400 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center">Espacio Disponible</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </CardContent>
                         </Card>
