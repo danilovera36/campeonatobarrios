@@ -282,6 +282,33 @@ export function TeamProfile({ team }: { team: Team }) {
                     </div>
                 </div>
             </div>
+
+            {/* Footer */}
+            <footer className="bg-green-800 text-white mt-16">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center">
+                        <h3 className="text-xl font-bold mb-2">Campeonato de los Barrios</h3>
+                        <p className="text-green-100">Alfredo "Tente" Zulueta</p>
+                        <p className="text-sm text-green-200 mt-4">
+                            Promoviendo el deporte y la comunidad desde 2026
+                        </p>
+
+                        <div className="mt-8 pt-6 border-t border-green-700/50 flex flex-col items-center justify-center gap-2">
+                            <p className="text-xs text-green-300 uppercase tracking-wider">Hecho por</p>
+                            <div className="flex items-center gap-3">
+                                <img
+                                    src="/logo.png"
+                                    alt="DV Soluciones Informáticas"
+                                    className="h-8 w-auto brightness-0 invert opacity-80 hover:opacity-100 transition-opacity"
+                                />
+                                <span className="text-sm font-medium text-green-100">
+                                    DV Soluciones Informáticas
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     )
 }
