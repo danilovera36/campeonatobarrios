@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Trophy, Target, TrendingUp, Users, Star, Calendar } from 'lucide-react'
+import { Trophy, Target, TrendingUp, Users, Star, Calendar, Shield } from 'lucide-react'
 
 interface PlayerStats {
   position: number
@@ -23,6 +23,11 @@ interface StatisticsData {
     matches: number
     goals: number
     avgGoals: string
+  }
+  extras?: {
+    bestOffense: { name: string, value: number } | null
+    bestDefense: { name: string, value: number } | null
+    fairPlay: { name: string, value: number } | null
   }
 }
 
@@ -239,10 +244,75 @@ export function StatisticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="p-8 text-center border-2 border-dashed rounded-lg">
-                <Target className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">Aquí aparecerán los récords del torneo (mayor goleada, rachas, etc.) a medida que se jueguen los partidos.</p>
-              </div>
+              {stats.extras ? (
+                <>
+                  {stats.extras.bestOffense && (
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-100 rounded-full">
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-green-900">Mejor Ofensiva</div>
+                          <div className="text-xs text-green-700">{stats.extras.bestOffense.name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-green-600">{stats.extras.bestOffense.value}</div>
+                        <div className="text-xs text-green-700">Goles anotados</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {stats.extras.bestDefense && (
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-full">
+                          <Shield className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-blue-900">Mejor Defensiva</div>
+                          <div className="text-xs text-blue-700">{stats.extras.bestDefense.name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-600">{stats.extras.bestDefense.value}</div>
+                        <div className="text-xs text-blue-700">Goles recibidos</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {stats.extras.fairPlay && (
+                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-yellow-100 rounded-full">
+                          <Star className="w-4 h-4 text-yellow-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-yellow-900">Fair Play</div>
+                          <div className="text-xs text-yellow-700">{stats.extras.fairPlay.name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-yellow-600">{stats.extras.fairPlay.value} pts</div>
+                        <div className="text-xs text-yellow-700">Puntaje de tarjetas</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!stats.extras.bestOffense && !stats.extras.bestDefense && !stats.extras.fairPlay && (
+                    <div className="p-8 text-center border-2 border-dashed rounded-lg">
+                      <Target className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">Aquí aparecerán los récords del torneo (mayor goleada, rachas, etc.) a medida que se jueguen los partidos.</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="p-8 text-center border-2 border-dashed rounded-lg">
+                  <Target className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">Aquí aparecerán los récords del torneo (mayor goleada, rachas, etc.) a medida que se jueguen los partidos.</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

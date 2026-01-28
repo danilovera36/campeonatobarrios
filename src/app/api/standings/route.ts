@@ -16,9 +16,8 @@ export async function GET() {
       ]
     })
 
-    // Calcular posición para cada equipo
-    const standings = teamStats.map((stat, index) => ({
-      position: index + 1,
+    // Calcular y mapear datos básicos
+    const standingsData = teamStats.map((stat) => ({
       team: stat.team,
       matchesPlayed: stat.matchesPlayed,
       wins: stat.wins,
@@ -28,6 +27,19 @@ export async function GET() {
       goalsAgainst: stat.goalsAgainst,
       goalDifference: stat.goalsFor - stat.goalsAgainst,
       points: stat.points
+    }))
+
+    // Ordenar: 1. Puntos, 2. Diferencia de Goles, 3. Goles a Favor
+    standingsData.sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points
+      if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference
+      return b.goalsFor - a.goalsFor
+    })
+
+    // Calcular posición para cada equipo después de ordenar
+    const standings = standingsData.map((stat, index) => ({
+      position: index + 1,
+      ...stat
     }))
 
     return NextResponse.json(standings)
