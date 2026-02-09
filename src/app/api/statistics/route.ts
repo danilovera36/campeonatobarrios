@@ -17,23 +17,27 @@ export async function GET() {
       take: 10
     })
 
-    // Complementar con info de jugadores
+    // Complementar con info de jugadores y sus estadísticas de partidos jugados
     const topScorers = await Promise.all(scorersQuery.map(async (item) => {
       const player = await db.player.findUnique({
         where: { id: item.playerId },
-        include: { team: true }
+        include: {
+          team: true,
+          statistics: {
+            where: { season: '2026' }
+          }
+        }
       })
+      const matchesPlayed = player?.statistics[0]?.matchesPlayed || 0
       return {
         name: player?.name || 'Desconocido',
         team: player?.team.name || 'S/E',
-        goals: item._count.id
+        goals: item._count.id,
+        matchesPlayed
       }
     }))
 
-    // Obtener los mejores asistentes calculados dinámicamente (Si hubiera tabla Assist, similar a Goal)
-    // Por ahora, como el usuario solo pidió goles y tarjetas, mantenemos la estructura pero dinámica si es posible.
-    // Si no hay tabla de asistencias, devolvemos vacío o corregimos la query.
-    // Viendo el esquema, EXSITE la tabla Assist.
+    // Obtener los mejores asistentes calculados dinámicamente
     const assistsQuery = await db.assist.groupBy({
       by: ['playerId'],
       _count: { id: true },
@@ -44,12 +48,19 @@ export async function GET() {
     const topAssists = await Promise.all(assistsQuery.map(async (item) => {
       const player = await db.player.findUnique({
         where: { id: item.playerId },
-        include: { team: true }
+        include: {
+          team: true,
+          statistics: {
+            where: { season: '2026' }
+          }
+        }
       })
+      const matchesPlayed = player?.statistics[0]?.matchesPlayed || 0
       return {
         name: player?.name || 'Desconocido',
         team: player?.team.name || 'S/E',
-        assists: item._count.id
+        assists: item._count.id,
+        matchesPlayed
       }
     }))
 
@@ -76,8 +87,15 @@ export async function GET() {
       include: { team: true }
     })
 
+    const teamStatsWithAvg = teamStatsAll
+      .filter(t => t.matchesPlayed > 0)
+      .map(t => ({
+        ...t,
+        defenseAvg: t.goalsAgainst / t.matchesPlayed
+      }))
+
     const bestOffense = [...teamStatsAll].sort((a, b) => b.goalsFor - a.goalsFor)[0]
-    const bestDefense = [...teamStatsAll].sort((a, b) => a.goalsAgainst - b.goalsAgainst)[0]
+    const bestDefense = teamStatsWithAvg.sort((a, b) => a.defenseAvg - b.defenseAvg)[0]
 
     // Obtener tarjetas por equipo para Fair Play
     const allCards = await db.card.findMany({
@@ -112,7 +130,7 @@ export async function GET() {
       },
       extras: {
         bestOffense: bestOffense ? { name: bestOffense.team.name, value: bestOffense.goalsFor } : null,
-        bestDefense: bestDefense ? { name: bestDefense.team.name, value: bestDefense.goalsAgainst } : null,
+        bestDefense: bestDefense ? { name: bestDefense.team.name, value: parseFloat(bestDefense.defenseAvg.toFixed(2)) } : null,
         fairPlay: fairPlayTeam ? { name: fairPlayTeam.name, value: fairPlayTeam.points } : null
       }
     })

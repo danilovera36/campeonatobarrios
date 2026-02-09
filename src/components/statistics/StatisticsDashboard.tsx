@@ -271,13 +271,13 @@ export function StatisticsDashboard() {
                           <Shield className="w-4 h-4 text-blue-600" />
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-blue-900">Mejor Defensiva</div>
+                          <div className="text-sm font-semibold text-blue-900">Valla Menos Vencida</div>
                           <div className="text-xs text-blue-700">{stats.extras.bestDefense.name}</div>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-blue-600">{stats.extras.bestDefense.value}</div>
-                        <div className="text-xs text-blue-700">Goles recibidos</div>
+                        <div className="text-xs text-blue-700">Goles recibidos por partido</div>
                       </div>
                     </div>
                   )}
