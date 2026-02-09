@@ -14,6 +14,7 @@ import { MatchesList } from '@/components/matches/MatchesList'
 import { StatisticsDashboard } from '@/components/statistics/StatisticsDashboard'
 import { NewsSection } from '@/components/news/NewsSection'
 import { NewsManager } from '@/components/news/NewsManager'
+import { PlayoffBracket } from '@/components/matches/PlayoffBracket'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { AdminButton } from '@/components/auth/AdminButton'
 import { PublicView } from '@/components/public/PublicView'
@@ -204,6 +205,9 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Playoff Bracket Section */}
+            <PlayoffBracket />
 
             {/* Recent Activity */}
             <Card className="shadow-lg">

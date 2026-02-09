@@ -33,6 +33,7 @@ export async function PATCH(
         const season = '2026'
         const wasCompleted = oldMatch?.status === 'COMPLETED'
         const isNowCompleted = status === 'COMPLETED'
+        const isPlayoff = round === 'Semifinal' || round === 'Final' || oldMatch?.round === 'Semifinal' || oldMatch?.round === 'Final'
 
         // Función para actualizar estadísticas de un equipo
         const updateTeamStats = async (teamId: string, diff: number, goalsFor: number, goalsAgainst: number) => {
@@ -67,17 +68,17 @@ export async function PATCH(
         }
 
         // 1. Si antes estaba completado y ahora NO, restamos las estadísticas viejas
-        if (wasCompleted && !isNowCompleted) {
+        if (wasCompleted && !isNowCompleted && !isPlayoff) {
             await updateTeamStats(oldMatch!.homeTeamId, -1, oldMatch!.homeScore || 0, oldMatch!.awayScore || 0)
             await updateTeamStats(oldMatch!.awayTeamId, -1, oldMatch!.awayScore || 0, oldMatch!.homeScore || 0)
         }
         // 2. Si ahora está completado y antes NO, sumamos las nuevas
-        else if (!wasCompleted && isNowCompleted) {
+        else if (!wasCompleted && isNowCompleted && !isPlayoff) {
             await updateTeamStats(match.homeTeamId, 1, match.homeScore || 0, match.awayScore || 0)
             await updateTeamStats(match.awayTeamId, 1, match.awayScore || 0, match.homeScore || 0)
         }
         // 3. Si ya estaba completado y sigue completado pero cambiaron los goles, restamos viejas y sumamos nuevas
-        else if (wasCompleted && isNowCompleted && (oldMatch?.homeScore !== match.homeScore || oldMatch?.awayScore !== match.awayScore)) {
+        else if (wasCompleted && isNowCompleted && !isPlayoff && (oldMatch?.homeScore !== match.homeScore || oldMatch?.awayScore !== match.awayScore)) {
             await updateTeamStats(oldMatch!.homeTeamId, -1, oldMatch!.homeScore || 0, oldMatch!.awayScore || 0)
             await updateTeamStats(oldMatch!.awayTeamId, -1, oldMatch!.awayScore || 0, oldMatch!.homeScore || 0)
             await updateTeamStats(match.homeTeamId, 1, match.homeScore || 0, match.awayScore || 0)
