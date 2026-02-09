@@ -116,7 +116,20 @@ export async function GET() {
       teamCards[team.id].points += card.type === 'YELLOW' ? 1 : 3
     })
 
-    const fairPlayArray = Object.values(teamCards).sort((a, b) => a.points - b.points)
+    const fairPlayArray = Object.entries(teamCards).map(([id, data]) => {
+      const stats = teamStatsAll.find(s => s.teamId === id)
+      const matchesPlayed = stats?.matchesPlayed || 0
+      const pointsAvg = matchesPlayed > 0 ? data.points / matchesPlayed : 0
+      return {
+        ...data,
+        id,
+        matchesPlayed,
+        pointsAvg
+      }
+    })
+      .filter(t => t.matchesPlayed > 0)
+      .sort((a, b) => a.pointsAvg - b.pointsAvg)
+
     const fairPlayTeam = fairPlayArray.length > 0 ? fairPlayArray[0] : null
 
     return NextResponse.json({
@@ -130,8 +143,16 @@ export async function GET() {
       },
       extras: {
         bestOffense: bestOffense ? { name: bestOffense.team.name, value: bestOffense.goalsFor } : null,
-        bestDefense: bestDefense ? { name: bestDefense.team.name, value: parseFloat(bestDefense.defenseAvg.toFixed(2)) } : null,
-        fairPlay: fairPlayTeam ? { name: fairPlayTeam.name, value: fairPlayTeam.points } : null
+        bestDefense: bestDefense ? {
+          name: bestDefense.team.name,
+          value: parseFloat(bestDefense.defenseAvg.toFixed(2)),
+          total: bestDefense.goalsAgainst
+        } : null,
+        fairPlay: fairPlayTeam ? {
+          name: fairPlayTeam.name,
+          value: parseFloat(fairPlayTeam.pointsAvg.toFixed(2)),
+          total: fairPlayTeam.points
+        } : null
       }
     })
   } catch (error) {

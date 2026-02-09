@@ -26,8 +26,8 @@ interface StatisticsData {
   }
   extras?: {
     bestOffense: { name: string, value: number } | null
-    bestDefense: { name: string, value: number } | null
-    fairPlay: { name: string, value: number } | null
+    bestDefense: { name: string, value: number, total: number } | null
+    fairPlay: { name: string, value: number, total: number } | null
   }
 }
 
@@ -276,8 +276,10 @@ export function StatisticsDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-blue-600">{stats.extras.bestDefense.value}</div>
-                        <div className="text-xs text-blue-700">Goles recibidos por partido</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          {stats.extras.bestDefense.total} <span className="text-xs font-normal text-blue-400">goles</span>
+                        </div>
+                        <div className="text-xs text-blue-700">Promedio: {stats.extras.bestDefense.value} x partido</div>
                       </div>
                     </div>
                   )}
@@ -294,8 +296,10 @@ export function StatisticsDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-yellow-600">{stats.extras.fairPlay.value} pts</div>
-                        <div className="text-xs text-yellow-700">Puntaje de tarjetas</div>
+                        <div className="text-lg font-bold text-yellow-600">
+                          {stats.extras.fairPlay.total} <span className="text-xs font-normal text-yellow-400">pts</span>
+                        </div>
+                        <div className="text-xs text-yellow-700">Promedio: {stats.extras.fairPlay.value} x partido</div>
                       </div>
                     </div>
                   )}
