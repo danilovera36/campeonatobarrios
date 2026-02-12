@@ -15,6 +15,7 @@ import { StatisticsDashboard } from '@/components/statistics/StatisticsDashboard
 import { NewsSection } from '@/components/news/NewsSection'
 import { NewsManager } from '@/components/news/NewsManager'
 import { PlayoffBracket } from '@/components/matches/PlayoffBracket'
+import { FeaturedFinal } from '@/components/matches/FeaturedFinal'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { AdminButton } from '@/components/auth/AdminButton'
 import { PublicView } from '@/components/public/PublicView'
@@ -205,6 +206,9 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Featured Final Section */}
+            <FeaturedFinal />
 
             {/* Playoff Bracket Section */}
             <PlayoffBracket />

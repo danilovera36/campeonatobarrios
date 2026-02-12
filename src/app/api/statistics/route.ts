@@ -94,9 +94,6 @@ export async function GET() {
         defenseAvg: t.goalsAgainst / t.matchesPlayed
       }))
 
-    const bestOffense = [...teamStatsAll].sort((a, b) => b.goalsFor - a.goalsFor)[0]
-    const bestDefense = teamStatsWithAvg.sort((a, b) => a.defenseAvg - b.defenseAvg)[0]
-
     // Obtener tarjetas por equipo para Fair Play
     const allCards = await db.card.findMany({
       include: {
@@ -130,7 +127,17 @@ export async function GET() {
       .filter(t => t.matchesPlayed > 0)
       .sort((a, b) => a.pointsAvg - b.pointsAvg)
 
-    const fairPlayTeam = fairPlayArray.length > 0 ? fairPlayArray[0] : null
+    // Obtener los mejores récords (manejando empates)
+    const sortedOffense = [...teamStatsAll].sort((a, b) => b.goalsFor - a.goalsFor)
+    const maxGoalsFor = sortedOffense.length > 0 ? sortedOffense[0].goalsFor : null
+    const bestOffenseTeams = maxGoalsFor !== null ? sortedOffense.filter(t => t.goalsFor === maxGoalsFor) : []
+
+    const sortedDefense = [...teamStatsWithAvg].sort((a, b) => a.defenseAvg - b.defenseAvg)
+    const minDefenseAvg = sortedDefense.length > 0 ? sortedDefense[0].defenseAvg : null
+    const bestDefenseTeams = minDefenseAvg !== null ? sortedDefense.filter(t => Math.abs(t.defenseAvg - minDefenseAvg) < 0.001) : []
+
+    const bestFairPlayAvg = fairPlayArray.length > 0 ? fairPlayArray[0].pointsAvg : null
+    const bestFairPlayTeams = bestFairPlayAvg !== null ? fairPlayArray.filter(t => Math.abs(t.pointsAvg - bestFairPlayAvg) < 0.001) : []
 
     return NextResponse.json({
       topScorers: formattedScorers,
@@ -142,16 +149,19 @@ export async function GET() {
         avgGoals
       },
       extras: {
-        bestOffense: bestOffense ? { name: bestOffense.team.name, value: bestOffense.goalsFor } : null,
-        bestDefense: bestDefense ? {
-          name: bestDefense.team.name,
-          value: parseFloat(bestDefense.defenseAvg.toFixed(2)),
-          total: bestDefense.goalsAgainst
+        bestOffense: bestOffenseTeams.length > 0 ? {
+          name: bestOffenseTeams.map(t => t.team.name).join(' - '),
+          value: maxGoalsFor
         } : null,
-        fairPlay: fairPlayTeam ? {
-          name: fairPlayTeam.name,
-          value: parseFloat(fairPlayTeam.pointsAvg.toFixed(2)),
-          total: fairPlayTeam.points
+        bestDefense: bestDefenseTeams.length > 0 ? {
+          name: bestDefenseTeams.map(t => t.team.name).join(' - '),
+          value: parseFloat(bestDefenseTeams[0].defenseAvg.toFixed(2)),
+          total: bestDefenseTeams[0].goalsAgainst
+        } : null,
+        fairPlay: bestFairPlayTeams.length > 0 ? {
+          name: bestFairPlayTeams.map(t => t.name).join(' - '),
+          value: parseFloat(bestFairPlayTeams[0].pointsAvg.toFixed(2)),
+          total: bestFairPlayTeams[0].points
         } : null
       }
     })

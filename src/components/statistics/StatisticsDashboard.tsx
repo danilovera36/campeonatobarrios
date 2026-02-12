@@ -277,7 +277,7 @@ export function StatisticsDashboard() {
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-blue-600">
-                          {stats.extras.bestDefense.total} <span className="text-xs font-normal text-blue-400">goles</span>
+                          {stats.extras.bestDefense.total} <span className="text-xs font-normal text-blue-400">goles en contra</span>
                         </div>
                         <div className="text-xs text-blue-700">Promedio: {stats.extras.bestDefense.value} x partido</div>
                       </div>
@@ -321,6 +321,6 @@ export function StatisticsDashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   )
 }
