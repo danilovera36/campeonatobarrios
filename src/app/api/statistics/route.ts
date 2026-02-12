@@ -81,18 +81,39 @@ export async function GET() {
     const goalsCount = await db.goal.count()
     const avgGoals = matchesCount > 0 ? (goalsCount / matchesCount).toFixed(2) : '0.00'
 
-    // Estadísticas adicionales de equipos por temporada
-    const teamStatsAll = await db.teamStatistic.findMany({
-      where: { season: '2026' },
-      include: { team: true }
+    // Estadísticas adicionales de equipos calculadas dinámicamente incluyendo PLAYOFFS
+    const allCompletedMatches = await db.match.findMany({
+      where: { status: 'COMPLETED' },
+      include: { homeTeam: true, awayTeam: true }
     })
 
-    const teamStatsWithAvg = teamStatsAll
-      .filter(t => t.matchesPlayed > 0)
-      .map(t => ({
-        ...t,
-        defenseAvg: t.goalsAgainst / t.matchesPlayed
-      }))
+    const dynamicTeamStats: Record<string, {
+      name: string,
+      goalsFor: number,
+      goalsAgainst: number,
+      matchesPlayed: number
+    }> = {}
+
+    allCompletedMatches.forEach(match => {
+      if (!dynamicTeamStats[match.homeTeamId]) {
+        dynamicTeamStats[match.homeTeamId] = { name: match.homeTeam.name, goalsFor: 0, goalsAgainst: 0, matchesPlayed: 0 }
+      }
+      dynamicTeamStats[match.homeTeamId].goalsFor += match.homeScore || 0
+      dynamicTeamStats[match.homeTeamId].goalsAgainst += match.awayScore || 0
+      dynamicTeamStats[match.homeTeamId].matchesPlayed += 1
+
+      if (!dynamicTeamStats[match.awayTeamId]) {
+        dynamicTeamStats[match.awayTeamId] = { name: match.awayTeam.name, goalsFor: 0, goalsAgainst: 0, matchesPlayed: 0 }
+      }
+      dynamicTeamStats[match.awayTeamId].goalsFor += match.awayScore || 0
+      dynamicTeamStats[match.awayTeamId].goalsAgainst += match.homeScore || 0
+      dynamicTeamStats[match.awayTeamId].matchesPlayed += 1
+    })
+
+    const dynamicStatsArray = Object.values(dynamicTeamStats).map(t => ({
+      ...t,
+      defenseAvg: t.goalsAgainst / t.matchesPlayed
+    }))
 
     // Obtener tarjetas por equipo para Fair Play
     const allCards = await db.card.findMany({
@@ -109,12 +130,11 @@ export async function GET() {
       if (!teamCards[team.id]) {
         teamCards[team.id] = { name: team.name, points: 0 }
       }
-      // Amarilla 1 punto, Roja 3 puntos
       teamCards[team.id].points += card.type === 'YELLOW' ? 1 : 3
     })
 
     const fairPlayArray = Object.entries(teamCards).map(([id, data]) => {
-      const stats = teamStatsAll.find(s => s.teamId === id)
+      const stats = dynamicTeamStats[id]
       const matchesPlayed = stats?.matchesPlayed || 0
       const pointsAvg = matchesPlayed > 0 ? data.points / matchesPlayed : 0
       return {
@@ -128,11 +148,11 @@ export async function GET() {
       .sort((a, b) => a.pointsAvg - b.pointsAvg)
 
     // Obtener los mejores récords (manejando empates)
-    const sortedOffense = [...teamStatsAll].sort((a, b) => b.goalsFor - a.goalsFor)
+    const sortedOffense = [...dynamicStatsArray].sort((a, b) => b.goalsFor - a.goalsFor)
     const maxGoalsFor = sortedOffense.length > 0 ? sortedOffense[0].goalsFor : null
     const bestOffenseTeams = maxGoalsFor !== null ? sortedOffense.filter(t => t.goalsFor === maxGoalsFor) : []
 
-    const sortedDefense = [...teamStatsWithAvg].sort((a, b) => a.defenseAvg - b.defenseAvg)
+    const sortedDefense = [...dynamicStatsArray].sort((a, b) => a.defenseAvg - b.defenseAvg)
     const minDefenseAvg = sortedDefense.length > 0 ? sortedDefense[0].defenseAvg : null
     const bestDefenseTeams = minDefenseAvg !== null ? sortedDefense.filter(t => Math.abs(t.defenseAvg - minDefenseAvg) < 0.001) : []
 
@@ -150,11 +170,11 @@ export async function GET() {
       },
       extras: {
         bestOffense: bestOffenseTeams.length > 0 ? {
-          name: bestOffenseTeams.map(t => t.team.name).join(' - '),
+          name: bestOffenseTeams.map(t => t.name).join(' - '),
           value: maxGoalsFor
         } : null,
         bestDefense: bestDefenseTeams.length > 0 ? {
-          name: bestDefenseTeams.map(t => t.team.name).join(' - '),
+          name: bestDefenseTeams.map(t => t.name).join(' - '),
           value: parseFloat(bestDefenseTeams[0].defenseAvg.toFixed(2)),
           total: bestDefenseTeams[0].goalsAgainst
         } : null,
